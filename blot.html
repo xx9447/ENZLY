@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>قيد البلوت</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-theme">
+    <nav class="top-bar">
+        <div class="nav-right">
+            <a href="index.html" class="nav-link">الرئيسية</a>
+            <button id="undo-btn" class="nav-link">تراجع</button>
+        </div>
+        <div class="nav-center">قيد البلوت</div>
+        <div class="nav-left">
+            <button id="new-game-trigger" class="nav-link">لعبة جديدة</button>
+            <button id="theme-toggle" class="icon-btn">🌙</button>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <div class="input-section">
+            <div class="input-group">
+                <label>لنا</label>
+                <input type="text" id="us-input" inputmode="numeric" placeholder="0">
+            </div>
+            <div class="input-group">
+                <label>لهم</label>
+                <input type="text" id="them-input" inputmode="numeric" placeholder="0">
+            </div>
+        </div>
+
+        <button id="save-btn" class="action-btn">سجل</button>
+
+        <div class="logs-container">
+            <div class="log-column" id="us-log"></div>
+            <div class="log-column" id="them-log"></div>
+        </div>
+    </main>
+
+    <footer class="totals-bar">
+        <div class="total-item">
+            <span class="total-label">لنا</span>
+            <span id="us-total" class="total-val">0</span>
+        </div>
+        <div class="total-item">
+            <span class="total-label">لهم</span>
+            <span id="them-total" class="total-val">0</span>
+        </div>
+    </footer>
+
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <h3>لعبة جديدة</h3>
+            <p>تبـي تبدأ لعبة جديدة؟</p>
+            <div class="modal-btns">
+                <button id="confirm-yes" class="btn-yes">نعم</button>
+                <button id="confirm-no" class="btn-no">لا</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="win-overlay" class="overlay">
+        <div class="win-content">
+            <h1 id="win-text">فوز</h1>
+            <div class="modal-btns">
+                <button id="win-reset" class="btn-yes">لعبة جديدة</button>
+                <button id="win-close" class="btn-no">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/theme.js"></script>
+    <script src="js/blot.js"></script>
+</body>
+</html>
