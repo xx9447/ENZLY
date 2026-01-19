@@ -87,6 +87,12 @@ a{ color: inherit; text-decoration: none; }
   flex: 0 0 auto;
 }
 
+.logo img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 /* أصغر داخل صفحات التسجيل */
 .logo.logo-sm{
   width: 34px;
