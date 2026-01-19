@@ -1,61 +1,369 @@
 <!doctype html>
-<html lang="ar" dir="rtl"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>قيد البلوت</title><link rel="stylesheet" href="../style.css"/></head>
-<body><div class="app pages" data-theme="dark">
-<header class="topbar"><div class="brand">
-<div class="logo"><img src="../logo.png" class="logo-img"></div>
-<div class="brand-text"><div class="brand-title">قيد البلوت</div></div>
-</div><button class="icon-btn" id="themeToggle"><span id="themeIcon">🌙</span></button></header>
-<main class="container">
-<div style="display:flex;gap:10px;margin-bottom:10px">
-<button id="homeBtn">الرئيسية</button>
-<button id="undoBtn">تراجع</button>
-<div style="flex:1;text-align:center;font-weight:bold">قيد البلوت</div>
-<button id="newGameBtn">لعبة جديدة</button>
-</div>
-<div id="alertBox" style="text-align:center;font-weight:bold;margin:10px"></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-<div><div style="text-align:center;font-weight:bold">لنا</div><input id="us" class="input" inputmode="numeric"></div>
-<div><div style="text-align:center;font-weight:bold">لهم</div><input id="them" class="input" inputmode="numeric"></div>
-</div>
-<button id="saveBtn" style="margin-top:10px;width:100%">سجل</button>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">
-<div id="usLog"></div><div id="themLog"></div></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px">
-<div id="usTotal" style="font-size:22px;font-weight:bold">0</div>
-<div id="themTotal" style="font-size:22px;font-weight:bold">0</div>
-</div></main></div>
-<script src="../app.js"></script>
-<script>
-const WIN=152;let usArr=[],themArr=[],locked=false;
-const us=document.getElementById('us'),them=document.getElementById('them');
-const usLog=document.getElementById('usLog'),themLog=document.getElementById('themLog');
-const usTotal=document.getElementById('usTotal'),themTotal=document.getElementById('themTotal');
-const alertBox=document.getElementById('alertBox');
-function toEng(s){const m={'٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9'};return s.replace(/[٠-٩]/g,d=>m[d]);}
-function render(){
-usLog.innerHTML='';themLog.innerHTML='';
-usArr.forEach(n=>usLog.innerHTML+=`<div>${n}</div>`);
-themArr.forEach(n=>themLog.innerHTML+=`<div>${n}</div>`);
-usTotal.textContent=usArr.reduce((a,b)=>a+b,0);
-themTotal.textContent=themArr.reduce((a,b)=>a+b,0);
-}
-document.getElementById('saveBtn').onclick=()=>{
-if(locked)return;
-let u=toEng(us.value||'');let t=toEng(them.value||'');
-u=u==''?0:Number(u);t=t==''?0:Number(t);
-usArr.push(u);themArr.push(t);
-checkWin();render();us.value='';them.value='';};
-function checkWin(){
-const u=usArr.reduce((a,b)=>a+b,0),t=themArr.reduce((a,b)=>a+b,0);
-if(u>=WIN||t>=WIN){if(u==t)return;locked=true;
-alertBox.textContent=(u>t)?'مبروك فوز !':'خسارة !';}}
-document.getElementById('undoBtn').onclick=()=>{
-if(confirm('متأكد تبي تتراجع ؟')){usArr.pop();themArr.pop();locked=false;alertBox.textContent='';render();}};
-document.getElementById('newGameBtn').onclick=()=>{
-if(confirm('متأكد تبي تبدأ لعبة جديدة ؟')){usArr=[];themArr=[];locked=false;alertBox.textContent='';render();}};
-document.getElementById('homeBtn').onclick=()=>{
-if(confirm('متأكد تبي ترجع للصفحة الرئيسية ؟'))location.href='../index.html';};
-render();
-</script></body></html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>قيد البلوت</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <div class="app" data-theme="dark">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo logo-sm">
+          <div class="logo-placeholder">LOGO</div>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">قيد البلوت</div>
+          <div class="brand-sub">تسجيل محلي — بدون حساب</div>
+        </div>
+      </div>
+
+      <button class="icon-btn" id="themeToggle" aria-label="تبديل الثيم" title="تبديل الثيم">
+        <span class="icon" id="themeIcon">🌙</span>
+      </button>
+    </header>
+
+    <main class="container">
+      <div class="toolbar">
+        <button class="small-btn" id="homeBtn" type="button">الرئيسية</button>
+        <button class="small-btn" id="undoBtn" type="button">تراجع</button>
+        <div class="center-title">قيد البلوت</div>
+        <button class="small-btn" id="newGameTopBtn" type="button">لعبة جديدة</button>
+      </div>
+
+      <div class="banner" id="endBanner">
+        <div id="endMessage"></div>
+        <div class="end-actions">
+          <button class="btn btn-ok" id="endNewGameBtn" type="button">لعبة جديدة</button>
+          <button class="btn" id="endHomeBtn" type="button">الصفحة الرئيسية</button>
+        </div>
+      </div>
+
+      <section class="panel">
+        <div class="inputs">
+          <div class="side">
+            <div class="side-title">لنا</div>
+            <input class="input" id="usInput" inputmode="tel" autocomplete="off" placeholder="0" />
+            <div class="help">تقدر تسجل لنا أو لهم أو الاثنين. التسجيل بس بزر “سجل”.</div>
+          </div>
+
+          <div class="side">
+            <div class="side-title">لهم</div>
+            <input class="input" id="themInput" inputmode="tel" autocomplete="off" placeholder="0" />
+            <div class="help">إذا الفريقين تعدّوا 152 وتعادلوا، نكمل لين واحد يتعدى الثاني.</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 12px;">
+          <button class="btn" id="saveBtn" type="button">سجل</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="logs">
+          <div class="log-col">
+            <div class="log-title">سجل لنا</div>
+            <div class="log-list" id="usLog"></div>
+          </div>
+
+          <div class="log-col">
+            <div class="log-title">سجل لهم</div>
+            <div class="log-list" id="themLog"></div>
+          </div>
+        </div>
+
+        <div class="totals">
+          <div class="total-box">
+            <div class="total-label">مجموع لنا</div>
+            <div class="total-value" id="usTotal">0</div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">مجموع لهم</div>
+            <div class="total-value" id="themTotal">0</div>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-danger" id="clearAllBtn" type="button">مسح السجل بالكامل</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../app.js"></script>
+  <script>
+    (function () {
+      const STORAGE_KEY = "qaid_baloot_v2";
+      const HISTORY_KEY = "qaid_baloot_history_v2";
+      const WIN_SCORE = 152;
+
+      // نصوص التأكيد (من سعود)
+      const CONFIRM_UNDO = "متأكد تبي تتراجع ؟";
+      const CONFIRM_NEW  = "متأكد تبي تبدأ لعبة جديدة ؟";
+      const CONFIRM_CLEAR= "متأكد تبي تمسح التسجيل بالكامل ؟";
+      const CONFIRM_HOME = "متأكد تبي ترجع للصفحة الرئيسية ؟";
+
+      // رسائل النهاية
+      const MSG_WIN_US   = "مبروك فوز !";
+      const MSG_WIN_THEM = "خسارة !";
+
+      const usInput = document.getElementById("usInput");
+      const themInput = document.getElementById("themInput");
+      const saveBtn = document.getElementById("saveBtn");
+
+      const undoBtn = document.getElementById("undoBtn");
+      const newGameTopBtn = document.getElementById("newGameTopBtn");
+      const clearAllBtn = document.getElementById("clearAllBtn");
+      const homeBtn = document.getElementById("homeBtn");
+
+      const endBanner = document.getElementById("endBanner");
+      const endMessage = document.getElementById("endMessage");
+      const endNewGameBtn = document.getElementById("endNewGameBtn");
+      const endHomeBtn = document.getElementById("endHomeBtn");
+
+      const usLog = document.getElementById("usLog");
+      const themLog = document.getElementById("themLog");
+      const usTotalEl = document.getElementById("usTotal");
+      const themTotalEl = document.getElementById("themTotal");
+
+      function freshState() {
+        return { us: [], them: [], locked: false, winner: null };
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return freshState();
+          const p = JSON.parse(raw);
+          return {
+            us: Array.isArray(p.us) ? p.us : [],
+            them: Array.isArray(p.them) ? p.them : [],
+            locked: !!p.locked,
+            winner: p.winner || null
+          };
+        } catch {
+          return freshState();
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function loadHistory() {
+        try {
+          const raw = localStorage.getItem(HISTORY_KEY);
+          if (!raw) return [];
+          const arr = JSON.parse(raw);
+          return Array.isArray(arr) ? arr : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function saveHistory() {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      }
+
+      function sum(arr) {
+        let s = 0;
+        for (const n of arr) s += n;
+        return s;
+      }
+
+      // يحول ١٢٣/۱۲۳ إلى 123 ويشيل أي شي مو رقم
+      function toWesternDigits(str) {
+        if (str == null) return "";
+        const map = {
+          '٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9',
+          '۰':'0','۱':'1','۲':'2','۳':'3','۴':'4','۵':'5','۶':'6','۷':'7','۸':'8','۹':'9'
+        };
+        let out = "";
+        for (const ch of String(str)) {
+          if (ch >= '0' && ch <= '9') out += ch;
+          else if (map[ch] != null) out += map[ch];
+        }
+        return out;
+      }
+
+      function sanitizeNumber(value) {
+        const digits = toWesternDigits(value).trim();
+        if (digits === "") return null;
+        const n = Number(digits);
+        if (!Number.isFinite(n)) return null;
+        return n;
+      }
+
+      function setEndUI() {
+        if (state.winner) {
+          endBanner.classList.add("show");
+          endMessage.textContent = state.winner === "us" ? MSG_WIN_US : MSG_WIN_THEM;
+        } else {
+          endBanner.classList.remove("show");
+          endMessage.textContent = "";
+        }
+      }
+
+      function render() {
+        usLog.innerHTML = "";
+        themLog.innerHTML = "";
+
+        state.us.forEach((n) => {
+          const item = document.createElement("div");
+          item.className = "log-item";
+          item.textContent = String(n); // إنجليزي
+          usLog.appendChild(item);
+        });
+
+        state.them.forEach((n) => {
+          const item = document.createElement("div");
+          item.className = "log-item";
+          item.textContent = String(n); // إنجليزي
+          themLog.appendChild(item);
+        });
+
+        const usTotal = sum(state.us);
+        const themTotal = sum(state.them);
+
+        usTotalEl.textContent = String(usTotal);
+        themTotalEl.textContent = String(themTotal);
+
+        saveBtn.disabled = state.locked;
+        undoBtn.disabled = history.length === 0;
+
+        setEndUI();
+
+        usInput.value = "";
+        themInput.value = "";
+      }
+
+      function checkWin() {
+        const usTotal = sum(state.us);
+        const themTotal = sum(state.them);
+
+        if (usTotal < WIN_SCORE && themTotal < WIN_SCORE) {
+          state.locked = false;
+          state.winner = null;
+          return;
+        }
+
+        if (usTotal >= WIN_SCORE && themTotal < WIN_SCORE) {
+          state.locked = true;
+          state.winner = "us";
+          return;
+        }
+        if (themTotal >= WIN_SCORE && usTotal < WIN_SCORE) {
+          state.locked = true;
+          state.winner = "them";
+          return;
+        }
+
+        // الاثنين تعدّوا
+        if (usTotal === themTotal) {
+          // تعادل: نكمل
+          state.locked = false;
+          state.winner = null;
+          return;
+        }
+
+        state.locked = true;
+        state.winner = usTotal > themTotal ? "us" : "them";
+      }
+
+      function recordHistory(entry) {
+        history.push(entry);
+        if (history.length > 300) history.shift();
+        saveHistory();
+      }
+
+      function onSave() {
+        if (state.locked) return;
+
+        const usVal = sanitizeNumber(usInput.value);
+        const themVal = sanitizeNumber(themInput.value);
+
+        if (usVal == null && themVal == null) return;
+
+        recordHistory({ usAdded: usVal != null, themAdded: themVal != null });
+
+        if (usVal != null) state.us.push(usVal);
+        if (themVal != null) state.them.push(themVal);
+
+        checkWin();
+        saveState();
+        render();
+      }
+
+      function onUndo() {
+        if (history.length === 0) return;
+        if (!confirm(CONFIRM_UNDO)) return;
+
+        const last = history.pop();
+        saveHistory();
+
+        if (last.usAdded && state.us.length > 0) state.us.pop();
+        if (last.themAdded && state.them.length > 0) state.them.pop();
+
+        state.locked = false;
+        state.winner = null;
+        checkWin();
+
+        saveState();
+        render();
+      }
+
+      function newGame(confirmText) {
+        if (!confirm(confirmText)) return;
+        state = freshState();
+        history = [];
+        saveState();
+        saveHistory();
+        render();
+      }
+
+      function goHome() {
+        if (!confirm(CONFIRM_HOME)) return;
+        window.location.href = "../index.html";
+      }
+
+      // Events
+      saveBtn.addEventListener("click", onSave);
+
+      undoBtn.addEventListener("click", onUndo);
+
+      newGameTopBtn.addEventListener("click", () => {
+        // أثناء اللعب = تأكيد (رقم 2)
+        newGame(CONFIRM_NEW);
+      });
+
+      clearAllBtn.addEventListener("click", () => {
+        // مسح السجل بالكامل = تأكيد (رقم 3)
+        newGame(CONFIRM_CLEAR);
+      });
+
+      homeBtn.addEventListener("click", goHome);
+
+      // نهاية اللعبة: زرّين بدون لف ودوران (بس بنفس التأكيدات)
+      endNewGameBtn.addEventListener("click", () => newGame(CONFIRM_NEW));
+      endHomeBtn.addEventListener("click", goHome);
+
+      // نضمن الإدخال يبقى أرقام فقط (عربي/إنجليزي)
+      function bindNumericOnly(inputEl) {
+        inputEl.addEventListener("input", () => {
+          const v = inputEl.value;
+          const cleaned = toWesternDigits(v);
+          if (v !== cleaned) inputEl.value = cleaned;
+        });
+      }
+      bindNumericOnly(usInput);
+      bindNumericOnly(themInput);
+
+      let state = loadState();
+      let history = loadHistory();
+      render();
+    })();
+  </script>
+</body>
+</html>
